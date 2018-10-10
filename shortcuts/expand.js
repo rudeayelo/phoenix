@@ -1,23 +1,21 @@
-
 /* EXPAND */
 
 const expansionCache = {};
 
-setHandler ( 'space', HYPER, () => {
+setHandler("return", HYPER, () => {
+  const window = Window.focused();
 
-  const window = Window.focused ();
+  if (!window) return;
 
-  if ( !window ) return;
+  const screen = Screen.main(),
+    sFrame = screen.flippedVisibleFrame(),
+    hash = window.hash(),
+    currFrame = window.frame(),
+    prevFrame = expansionCache[hash],
+    expanding =
+      currFrame.width < sFrame.width || currFrame.height + 6 < sFrame.height; //FIXME: The setted height might be lower than the actual available height
 
-  const screen = Screen.main (),
-        sFrame = screen.flippedVisibleFrame (),
-        hash = window.hash (),
-        currFrame = window.frame (),
-        prevFrame = expansionCache[hash],
-        expanding = currFrame.width < sFrame.width || ( currFrame.height + 6 ) < sFrame.height; //FIXME: The setted height might be lower than the actual available height
-
-  if ( expanding ) {
-
+  if (expanding) {
     expansionCache[hash] = currFrame;
 
     const nextFrame = {
@@ -27,18 +25,13 @@ setHandler ( 'space', HYPER, () => {
       height: sFrame.height
     };
 
-    window.setFrame ( nextFrame );
-
+    window.setFrame(nextFrame);
   } else {
-
     delete expansionCache[hash];
 
-    if ( prevFrame ) {
-
-      window.setFrame ( prevFrame );
-
+    if (prevFrame) {
+      window.setFrame(prevFrame);
     } else {
-
       const nextFrame = {
         x: sFrame.x,
         y: sFrame.y,
@@ -46,12 +39,9 @@ setHandler ( 'space', HYPER, () => {
         height: CENTER_HEIGHT
       };
 
-      window.setFrame ( nextFrame );
+      window.setFrame(nextFrame);
 
-      center_window ( window );
-
+      center_window(window);
     }
-
   }
-
 });
